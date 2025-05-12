@@ -26,7 +26,7 @@ public class DbService : IDbService
             JOIN Doctor d ON a.doctor_id = d.doctor_id
             JOIN Appointment_Service aps ON a.appointment_id = aps.appointment_id
             JOIN Service s ON aps.service_id = s.service_id
-            WHERE a.AppointmentId = @id 
+            WHERE a.appointment_id = @id 
             ", conn);
         
         cmd.Parameters.AddWithValue("@id", appointmentId);
