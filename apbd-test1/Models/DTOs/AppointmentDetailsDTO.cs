@@ -23,6 +23,6 @@ public class DoctorDTO
 
 public class ServiceDTO
 {
-    public int Name { get; set; }
+    public string Name { get; set; }
     public decimal ServiceFee { get; set; }
 }
