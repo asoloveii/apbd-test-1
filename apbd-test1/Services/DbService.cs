@@ -22,10 +22,10 @@ public class DbService : IDbService
             SELECT a.date, p.first_name, p.last_name, p.date_of_birth, d.doctor_id, d.PWZ,
                    s.name, s.base_fee
             FROM Appointment a
-            JOIN Patient p ON a.PatientId = p.PatientId
-            JOIN Doctor d ON a.DoctorId = d.DoctorId
-            JOIN Appointment_Service aps ON a.AppointmentId = aps.AppointmentId
-            JOIN Services s ON aps.ServiceId = s.ServiceId
+            JOIN Patient p ON a.patient_id = p.patient_id
+            JOIN Doctor d ON a.doctor_id = d.doctor_id
+            JOIN Appointment_Service aps ON a.appointment_id = aps.appointment_id
+            JOIN Services s ON aps.service_id = s.service_id
             WHERE a.AppointmentId = @id 
             ", conn);
         
