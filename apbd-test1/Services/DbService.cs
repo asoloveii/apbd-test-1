@@ -19,8 +19,8 @@ public class DbService : IDbService
         await conn.OpenAsync();
         
         var cmd = new SqlCommand(@"
-            SELECT a.Date, p.FirstName, p.LastName, p.DateOfBirth, d.DoctorId, d.PWZ,
-                   s.Name, s.Fee
+            SELECT a.date, p.first_name, p.last_name, p.date_of_birth, d.doctor_id, d.PWZ,
+                   s.name, s.base_fee
             FROM Appointment a
             JOIN Patient p ON a.PatientId = p.PatientId
             JOIN Doctor d ON a.DoctorId = d.DoctorId
@@ -84,7 +84,7 @@ public class DbService : IDbService
         {
             // check if appointment with id already exists
             cmd.Parameters.Clear();
-            cmd.CommandText = "SELECT 1 FROM Appointment WHERE AppointmentId = @id";
+            cmd.CommandText = "SELECT 1 FROM Appointment WHERE appointmed_id = @id";
             cmd.Parameters.AddWithValue("@id", appointmentDTO.AppointmentId);
             var countAppointments = await cmd.ExecuteScalarAsync(); 
             if (countAppointments is not null)
@@ -92,7 +92,7 @@ public class DbService : IDbService
             
             // validate existance of a patient
             cmd.Parameters.Clear();
-            cmd.CommandText = "SELECT 1 FROM Patient WHERE PatientId = @id";
+            cmd.CommandText = "SELECT 1 FROM Patient WHERE patient_id = @id";
             cmd.Parameters.AddWithValue("@id", appointmentDTO.PatientId);
             var countPatients = await cmd.ExecuteScalarAsync(); 
             if (countPatients is null)
@@ -100,7 +100,7 @@ public class DbService : IDbService
             
             // get doctor id by pwz
             cmd.Parameters.Clear();
-            cmd.CommandText = "SELECT DoctorId FROM Doctor WHERE PWZ = @pwz";
+            cmd.CommandText = "SELECT doctor_id FROM Doctor WHERE PWZ = @pwz";
             cmd.Parameters.AddWithValue("@pwz", appointmentDTO.PWZ);
             object doctorIdObj = await cmd.ExecuteScalarAsync();
             if (doctorIdObj == null)
@@ -113,7 +113,7 @@ public class DbService : IDbService
             foreach (var service in appointmentDTO.Services)
             {
                 cmd.Parameters.Clear();
-                cmd.CommandText = "SELECT ServiceId FROM Service WHERE Name = @name AND Fee = @fee";
+                cmd.CommandText = "SELECT service_id FROM Service WHERE name = @name AND base_fee = @fee";
                 cmd.Parameters.AddWithValue("@name", service.Name);
                 cmd.Parameters.AddWithValue("@fee", service.ServiceFee);
                 object serviceIdObj = await cmd.ExecuteScalarAsync();
@@ -126,7 +126,7 @@ public class DbService : IDbService
             // insert new appointment
             cmd.Parameters.Clear();
             cmd.CommandText =
-                "INSERT INTO Appointment (AppointmentId, Date, PatientId, DoctorId) VALUES (@id, @date, @patientId, @doctorId)";
+                "INSERT INTO Appointment (appointment_id, date, patient_id, doctor_id) VALUES (@id, @date, @patientId, @doctorId)";
             cmd.Parameters.AddWithValue("@id", appointmentDTO.AppointmentId);
             cmd.Parameters.AddWithValue("@date", DateTime.Now); 
             cmd.Parameters.AddWithValue("@patientId", appointmentDTO.PatientId);
@@ -136,7 +136,7 @@ public class DbService : IDbService
             // insert into Appointment_Service
             foreach (var serviceId in serviceIds)
             {
-                cmd.CommandText = "INSERT INTO Appointment_Service (AppointmentId, ServiceId) VALUES (@appointmentId, @serviceId)";
+                cmd.CommandText = "INSERT INTO Appointment_Service (appointment_id, service_id) VALUES (@appointmentId, @serviceId)";
                 cmd.Parameters.AddWithValue("@appointmentId", appointmentDTO.AppointmentId);
                 cmd.Parameters.AddWithValue("@serviceId", serviceId);
                 await cmd.ExecuteNonQueryAsync();
